@@ -1,24 +1,36 @@
-name: legenda 
+name: test 
 
 services:
-  nginx:
+  frontend:
+    container_name: production_frontend
+    build:
+      context: ./front
+    networks:
+      - production_network
+
+  backend: 
+    container_name: production_backend
+    build:
+      context: ./backend
+    networks:
+      - production_network
+      
+  nginx: 
     image: nginx:latest
+    container_name: production_nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - webdata:/usr/share/nginx/html
-      - ./nginx-conf:/etc/nginx/conf.d
-      - letsencrypt:/etc/letsencrypt
+      - 80:80
+      - 443:443
+    networks:
+      - production_network
     depends_on:
-      - certbot
+      - frontend
+      - backend
+    links:
+      - frontend
+      - backend
 
-  certbot:
-    image: certbot/certbot
-    volumes:
-      - letsencrypt:/etc/letsencrypt
-      - webdata:/usr/share/nginx/html
-
-volumes:
-  letsencrypt:
-  webdata:
+networks:
+  production_network:
