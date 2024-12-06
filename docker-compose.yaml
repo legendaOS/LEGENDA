@@ -14,6 +14,13 @@ services:
       context: ./backend
     networks:
       - production_network
+
+  notifications:
+    container_name: production_notifications
+    build:
+      context: ./notifications-sender
+    networks:
+      - production_network
       
   nginx: 
     image: nginx:latest
